@@ -1,0 +1,225 @@
+openapi: 3.0.3
+info:
+  title: Campus Equipment Loan System API
+  description: REST API for managing equipment loans in a campus environment
+  version: 1.0.0
+  contact:
+    name: Campus Equipment Loan System
+    email: support@campus.edu
+  license:
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8080
+    description: Development server
+
+paths:
+  /api/students:
+    get:
+      tags:
+        - Students
+      summary: Get all students
+      responses:
+        '200':
+          description: Successfully retrieved students
+    post:
+      tags:
+        - Students
+      summary: Create new student
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Student'
+      responses:
+        '200':
+          description: Student created successfully
+        '400':
+          description: Invalid input
+
+  /api/students/{id}:
+    get:
+      tags:
+        - Students
+      summary: Get student by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Student found
+        '404':
+          description: Student not found
+
+  /api/equipment:
+    get:
+      tags:
+        - Equipment
+      summary: Get all equipment
+      responses:
+        '200':
+          description: Successfully retrieved equipment
+    post:
+      tags:
+        - Equipment
+      summary: Create new equipment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Equipment'
+      responses:
+        '200':
+          description: Equipment created successfully
+        '400':
+          description: Invalid input
+
+  /api/equipment/available:
+    get:
+      tags:
+        - Equipment
+      summary: Get available equipment
+      responses:
+        '200':
+          description: Successfully retrieved available equipment
+
+  /api/loans:
+    get:
+      tags:
+        - Loans
+      summary: Get all loans
+      responses:
+        '200':
+          description: Successfully retrieved loans
+    post:
+      tags:
+        - Loans
+      summary: Create new loan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoanRequest'
+      responses:
+        '200':
+          description: Loan created successfully
+        '400':
+          description: Invalid input or business rule violation
+
+  /api/loans/{id}/return:
+    post:
+      tags:
+        - Loans
+      summary: Return loan
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Loan returned successfully
+        '400':
+          description: Invalid loan state
+        '404':
+          description: Loan not found
+
+  /api/loans/overdue:
+    get:
+      tags:
+        - Loans
+      summary: Get overdue loans
+      responses:
+        '200':
+          description: Successfully retrieved overdue loans
+
+components:
+  schemas:
+    Student:
+      type: object
+      required:
+        - studentNo
+        - name
+        - email
+      properties:
+        id:
+          type: integer
+          format: int64
+        studentNo:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+
+    Equipment:
+      type: object
+      required:
+        - name
+        - type
+        - serialNumber
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        type:
+          type: string
+        serialNumber:
+          type: string
+        availability:
+          type: boolean
+
+    Loan:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        student:
+          $ref: '#/components/schemas/Student'
+        equipment:
+          $ref: '#/components/schemas/Equipment'
+        startDate:
+          type: string
+          format: date
+        dueDate:
+          type: string
+          format: date
+        returnDate:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: [ACTIVE, RETURNED, OVERDUE]
+
+    LoanRequest:
+      type: object
+      required:
+        - student
+        - equipment
+      properties:
+        student:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+        equipment:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
