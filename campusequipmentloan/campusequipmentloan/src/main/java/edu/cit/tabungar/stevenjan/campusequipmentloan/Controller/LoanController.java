@@ -2,6 +2,7 @@ package edu.cit.tabungar.stevenjan.campusequipmentloan.Controller;
 
 import edu.cit.tabungar.stevenjan.campusequipmentloan.Service.EquipmentService;
 import edu.cit.tabungar.stevenjan.campusequipmentloan.Model.Loan;
+import edu.cit.tabungar.stevenjan.campusequipmentloan.DTO.LoanRequestDTO;
 import edu.cit.tabungar.stevenjan.campusequipmentloan.Service.LoanService;
 import edu.cit.tabungar.stevenjan.campusequipmentloan.Service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,13 +11,11 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @RestController
 @RequestMapping("/api")
-@Tag(name = "Loans", description = "Equipment loan management operations")
+
 public class LoanController {
 
     private final LoanService loanService;
@@ -30,9 +29,8 @@ public class LoanController {
         this.studentService = studentService;
     }
 
-    // GET /api/loans → get all loans
+ 
     @GetMapping("/loans")
-    @Operation(summary = "Get all loans", description = "Retrieve a list of all equipment loans")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved loans")
     public ResponseEntity<List<Loan>> getAllLoans() {
         List<Loan> loans = loanService.getAllLoans();
@@ -49,7 +47,7 @@ public class LoanController {
 
     // POST /api/loans → create loan
     @PostMapping("/loans")
-    public ResponseEntity<Loan> createLoan(@Valid @RequestBody Loan loanRequest) {
+    public ResponseEntity<Loan> createLoan(@Valid @RequestBody LoanRequestDTO loanRequest) {
         try {
             Loan createdLoan = loanService.createLoan(loanRequest);
             return ResponseEntity.ok(createdLoan);

@@ -75,28 +75,6 @@ public class EquipmentController {
         }
     }
 
-    // PUT /api/equipment/{id} → update equipment
-    @PutMapping("/{id}")
-    public ResponseEntity<Equipment> updateEquipment(@PathVariable Long id, @Valid @RequestBody Equipment equipmentDetails) {
-        try {
-            Equipment updatedEquipment = equipmentService.updateEquipment(id, equipmentDetails);
-            return ResponseEntity.ok(updatedEquipment);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    // DELETE /api/equipment/{id} → delete equipment
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEquipment(@PathVariable Long id) {
-        try {
-            equipmentService.deleteEquipment(id);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
     // POST /api/equipment/{id}/mark-unavailable → mark equipment as unavailable
     @PostMapping("/{id}/mark-unavailable")
     public ResponseEntity<Equipment> markAsUnavailable(@PathVariable Long id) {

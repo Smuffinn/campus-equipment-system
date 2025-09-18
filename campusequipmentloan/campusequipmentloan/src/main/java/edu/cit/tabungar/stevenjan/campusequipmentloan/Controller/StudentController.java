@@ -48,35 +48,13 @@ public class StudentController {
     }
 
     // POST /api/students → create new student
-    @PostMapping
+    @PostMapping({"", "/"})
     public ResponseEntity<Student> createStudent(@Valid @RequestBody Student student) {
         try {
             Student createdStudent = studentService.createStudent(student);
             return ResponseEntity.ok(createdStudent);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
-        }
-    }
-
-    // PUT /api/students/{id} → update student
-    @PutMapping("/{id}")
-    public ResponseEntity<Student> updateStudent(@PathVariable Long id, @Valid @RequestBody Student studentDetails) {
-        try {
-            Student updatedStudent = studentService.updateStudent(id, studentDetails);
-            return ResponseEntity.ok(updatedStudent);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    // DELETE /api/students/{id} → delete student
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
-        try {
-            studentService.deleteStudent(id);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
         }
     }
 

@@ -1,5 +1,6 @@
 package edu.cit.tabungar.stevenjan.campusequipmentloan.Service;
 
+import edu.cit.tabungar.stevenjan.campusequipmentloan.DTO.LoanRequestDTO;
 import edu.cit.tabungar.stevenjan.campusequipmentloan.Model.Equipment;
 import edu.cit.tabungar.stevenjan.campusequipmentloan.Model.Loan;
 import edu.cit.tabungar.stevenjan.campusequipmentloan.Repository.EquipmentRepository;
@@ -28,7 +29,7 @@ public class LoanService {
         this.loanRepository = loanRepository;
         this.equipmentRepository = equipmentRepository;
         this.studentRepository = studentRepository;
-        this.penaltyRules = new Rules.DailyRules(5.0); // $5 per day penalty
+        this.penaltyRules = new Rules.DailyRules(50.0); // ₱50 per day penalty
     }
 
     public List<Loan> getAllLoans() {
@@ -51,23 +52,23 @@ public class LoanService {
         return loanRepository.findOverdueLoans(LocalDate.now());
     }
 
-    public Loan createLoan(Loan loanRequest) {
+    public Loan createLoan(LoanRequestDTO loanRequest) {
         // Validate student exists
-        Student student = studentRepository.findById(loanRequest.getStudent().getId())
+        Student student = studentRepository.findById(loanRequest.getStudentId())
                 .orElseThrow(() -> new IllegalArgumentException("Student not found"));
 
         // Validate equipment exists and is available
-        Equipment equipment = equipmentRepository.findById(loanRequest.getEquipment().getId())
+        Equipment equipment = equipmentRepository.findById(loanRequest.getEquipmentId())
                 .orElseThrow(() -> new IllegalArgumentException("Equipment not found"));
 
         if (!equipment.isAvailable()) {
             throw new IllegalArgumentException("Equipment is not available for loan");
         }
 
-        // Check if student has too many active loans (max 3)
+        // Check if student has too many active loans (max 2)
         long activeLoans = loanRepository.countActiveLoansForStudent(student.getId());
-        if (activeLoans >= 3) {
-            throw new IllegalArgumentException("Student has reached maximum number of active loans (3)");
+        if (activeLoans >= 2) {
+            throw new IllegalArgumentException("Student has reached maximum number of active loans (2)");
         }
 
         // Set loan details
