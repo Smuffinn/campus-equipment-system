@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +27,7 @@ public class StudentController {
 
     // GET /api/students → get all students
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Student>> getAllStudents() {
         List<Student> students = studentService.getAllStudents();
         return ResponseEntity.ok(students);
@@ -33,6 +35,7 @@ public class StudentController {
 
     // GET /api/students/{id} → get student by id
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Student> getStudentById(@PathVariable Long id) {
         Optional<Student> student = studentService.getStudentById(id);
         return student.map(ResponseEntity::ok)
@@ -41,6 +44,7 @@ public class StudentController {
 
     // GET /api/students/studentNo/{studentNo} → get student by student number
     @GetMapping("/studentNo/{studentNo}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Student> getStudentByStudentNo(@PathVariable String studentNo) {
         Optional<Student> student = studentService.getStudentByStudentNo(studentNo);
         return student.map(ResponseEntity::ok)
@@ -49,6 +53,7 @@ public class StudentController {
 
     // POST /api/students → create new student
     @PostMapping({"", "/"})
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Student> createStudent(@Valid @RequestBody Student student) {
         try {
             Student createdStudent = studentService.createStudent(student);
@@ -60,6 +65,7 @@ public class StudentController {
 
     // GET /api/students/{id}/loans → get loans for student
     @GetMapping("/{id}/loans")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Loan>> getStudentLoans(@PathVariable Long id) {
         List<Loan> loans = loanService.getLoansByStudent(id);
         return ResponseEntity.ok(loans);
@@ -67,6 +73,7 @@ public class StudentController {
 
     // GET /api/students/{id}/loans/active → get active loans for student
     @GetMapping("/{id}/loans/active")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Loan>> getActiveStudentLoans(@PathVariable Long id) {
         List<Loan> activeLoans = loanService.getActiveLoansForStudent(id);
         return ResponseEntity.ok(activeLoans);

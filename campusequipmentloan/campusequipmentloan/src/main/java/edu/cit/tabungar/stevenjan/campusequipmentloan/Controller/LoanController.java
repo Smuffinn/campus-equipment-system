@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 import java.util.Optional;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -31,6 +32,7 @@ public class LoanController {
 
  
     @GetMapping("/loans")
+    @PreAuthorize("isAuthenticated()")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved loans")
     public ResponseEntity<List<Loan>> getAllLoans() {
         List<Loan> loans = loanService.getAllLoans();
@@ -39,6 +41,7 @@ public class LoanController {
 
     // GET /api/loans/{id} → get loan by id
     @GetMapping("/loans/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Loan> getLoanById(@PathVariable Long id) {
         Optional<Loan> loan = loanService.getLoanById(id);
         return loan.map(ResponseEntity::ok)
@@ -47,6 +50,7 @@ public class LoanController {
 
     // POST /api/loans → create loan
     @PostMapping("/loans")
+    @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<Loan> createLoan(@Valid @RequestBody LoanRequestDTO loanRequest) {
         try {
             Loan createdLoan = loanService.createLoan(loanRequest);
@@ -58,6 +62,7 @@ public class LoanController {
 
     // POST /api/loans/{id}/return → return loan
     @PostMapping("/loans/{id}/return")
+    @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<Loan> returnLoan(@PathVariable Long id) {
         try {
             Loan returnedLoan = loanService.returnLoan(id);
@@ -69,6 +74,7 @@ public class LoanController {
 
     // POST /api/loans/{id}/extend → extend loan
     @PostMapping("/loans/{id}/extend")
+    @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<Loan> extendLoan(@PathVariable Long id, @RequestParam int days) {
         try {
             Loan extendedLoan = loanService.extendLoan(id, days);
@@ -80,6 +86,7 @@ public class LoanController {
 
     // GET /api/loans/student/{studentId} → get loans for student
     @GetMapping("/loans/student/{studentId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Loan>> getLoansByStudent(@PathVariable Long studentId) {
         List<Loan> loans = loanService.getLoansByStudent(studentId);
         return ResponseEntity.ok(loans);
@@ -87,6 +94,7 @@ public class LoanController {
 
     // GET /api/loans/overdue → get overdue loans
     @GetMapping("/loans/overdue")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Loan>> getOverdueLoans() {
         List<Loan> overdueLoans = loanService.getOverdueLoans();
         return ResponseEntity.ok(overdueLoans);
@@ -94,6 +102,7 @@ public class LoanController {
 
     // GET /api/loans/{id}/penalty → calculate penalty for loan
     @GetMapping("/loans/{id}/penalty")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Double> calculatePenalty(@PathVariable Long id) {
         try {
             double penalty = loanService.calculatePenalty(id);
